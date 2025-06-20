@@ -1,7 +1,5 @@
 package bl4ckscor3.mod.wrenchest;
 
-import static net.minecraft.util.Mth.frac;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
@@ -19,14 +17,15 @@ import net.minecraft.world.level.block.state.properties.ChestType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import static net.minecraft.util.Mth.frac;
+
 @Mod(Wrenchest.MODID)
-@EventBusSubscriber(bus = Bus.MOD)
+@EventBusSubscriber
 public class Wrenchest {
 	public static final String MODID = "wrenchest";
 	public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);

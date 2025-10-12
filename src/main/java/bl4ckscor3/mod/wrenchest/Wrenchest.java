@@ -3,7 +3,6 @@ package bl4ckscor3.mod.wrenchest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.CreativeModeTab.TabVisibility;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -35,7 +34,7 @@ public class Wrenchest {
 			InteractionResult result = checkConnections(ctx);
 
 			if (result == InteractionResult.SUCCESS && !ctx.getPlayer().isCreative())
-				stack.hurtAndBreak(1, ctx.getPlayer(), LivingEntity.getSlotForHand(ctx.getHand()));
+				stack.hurtAndBreak(1, ctx.getPlayer(), ctx.getHand().asEquipmentSlot());
 
 			return result;
 		}
@@ -67,6 +66,10 @@ public class Wrenchest {
 				BlockState otherState = level.getBlockState(otherPos);
 
 				if (otherState.getBlock() instanceof ChestBlock && otherState.getValue(ChestBlock.TYPE) == ChestType.SINGLE) {
+					//don't attempt to connect different types of chests that don't connect anyway
+					if (chestState.getBlock() != otherState.getBlock())
+						return InteractionResult.PASS;
+
 					Direction facing = chestState.getValue(ChestBlock.FACING);
 					Direction otherFacing = otherState.getValue(ChestBlock.FACING);
 

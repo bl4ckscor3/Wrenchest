@@ -166,7 +166,7 @@ public class Wrenchest {
 				default -> ChestType.SINGLE;
 			};
 		}
-	}, new Item.Properties().durability(256).repairable(Items.IRON_INGOT));
+	}, () -> new Item.Properties().durability(256).repairable(Items.IRON_INGOT));
 
 	public Wrenchest(IEventBus modEventBus) {
 		ITEMS.register(modEventBus);

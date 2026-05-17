@@ -11,11 +11,14 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.common.Tags;
 
 public class RecipeGenerator extends RecipeProvider {
+	public static final TagKey<Item> INGOTS_IRON = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "ingots/iron"));
+	public static final TagKey<Item> DUSTS_REDSTONE = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "dusts/redstone"));
 	private final HolderGetter<Item> items;
 
 	public RecipeGenerator(HolderLookup.Provider lookupProvider, RecipeOutput output) {
@@ -24,18 +27,16 @@ public class RecipeGenerator extends RecipeProvider {
 	}
 
 	@Override
-	protected final void buildRecipes() {
-		//@formatter:off
-		ShapedRecipeBuilder.shaped(items, RecipeCategory.TOOLS, Wrenchest.CHEST_WRENCH)
-		.pattern(" I ")
-		.pattern(" RI")
-		.pattern("S  ")
-		.define('I', Tags.Items.INGOTS_IRON)
-		.define('R', Tags.Items.DUSTS_REDSTONE)
-		.define('S', Items.STICK)
-		.unlockedBy("has_redstone", has(Tags.Items.DUSTS_REDSTONE))
-		.save(output);
-		//@formatter:on
+	public final void buildRecipes() {
+		ShapedRecipeBuilder.shaped(items, RecipeCategory.TOOLS, Wrenchest.CHEST_WRENCH.get())
+			.pattern(" I ")
+			.pattern(" RI")
+			.pattern("S  ")
+			.define('I', INGOTS_IRON)
+			.define('R', DUSTS_REDSTONE)
+			.define('S', Items.STICK)
+			.unlockedBy("has_redstone", has(DUSTS_REDSTONE))
+			.save(output);
 	}
 
 	public static final class Runner extends RecipeProvider.Runner {

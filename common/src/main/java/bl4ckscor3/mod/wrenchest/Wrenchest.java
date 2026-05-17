@@ -2,9 +2,11 @@ package bl4ckscor3.mod.wrenchest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.CreativeModeTab.TabVisibility;
-import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -13,36 +15,27 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 import static net.minecraft.util.Mth.frac;
 
-@Mod(Wrenchest.MODID)
-@EventBusSubscriber
 public class Wrenchest {
 	public static final String MODID = "wrenchest";
-	public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-	public static final DeferredItem<Item> CHEST_WRENCH = ITEMS.registerItem("chest_wrench", p -> new Item(p) {
+	public static final RegistryObject<Item> CHEST_WRENCH = RegistryObject.item("chest_wrench", p -> new Item(p) {
 		@Override
-		public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext ctx) {
+		public InteractionResult useOn(UseOnContext ctx) {
+			Player player = ctx.getPlayer();
+			InteractionHand hand = ctx.getHand();
+			ItemStack stack = player.getItemInHand(hand);
 			InteractionResult result = checkConnections(ctx);
 
-			if (result == InteractionResult.SUCCESS && !ctx.getPlayer().isCreative())
-				stack.hurtAndBreak(1, ctx.getPlayer(), ctx.getHand().asEquipmentSlot());
+			if (result == InteractionResult.SUCCESS && !player.isCreative())
+				stack.hurtAndBreak(1, player, hand.asEquipmentSlot());
 
 			return result;
 		}
 
 		/**
 		 * Checks which way two chests might be facing each other and then connects them
-		 *
-		 * @see Item#onItemUseFirst
 		 */
 		private InteractionResult checkConnections(UseOnContext ctx) {
 			if (!(ctx.getLevel().getBlockState(ctx.getClickedPos()).getBlock() instanceof ChestBlock))
@@ -167,14 +160,22 @@ public class Wrenchest {
 			};
 		}
 	}, () -> new Item.Properties().durability(256).repairable(Items.IRON_INGOT));
+	private static Platform platform;
 
-	public Wrenchest(IEventBus modEventBus) {
-		ITEMS.register(modEventBus);
+	public synchronized static void initialize(Platform platform) {
+		if (Wrenchest.platform != null) {
+			throw new IllegalArgumentException(MODID + " platform has already been initialized");
+		}
+
+		Wrenchest.platform = platform;
+		platform.register(Registries.ITEM, CHEST_WRENCH);
 	}
 
-	@SubscribeEvent
-	public static void onCreativeModeTabBuildContents(BuildCreativeModeTabContentsEvent event) {
-		if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES)
-			event.insertBefore(new ItemStack(Items.FISHING_ROD), new ItemStack(CHEST_WRENCH.get()), TabVisibility.PARENT_AND_SEARCH_TABS);
+	public static Identifier id(String path) {
+		return Identifier.fromNamespaceAndPath(MODID, path);
+	}
+
+	public static Platform platform() {
+		return platform;
 	}
 }

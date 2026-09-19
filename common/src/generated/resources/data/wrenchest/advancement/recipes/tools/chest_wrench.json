@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "wrenchest:chest_wrench"
+        "recipes": "wrenchest:chest_wrench"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

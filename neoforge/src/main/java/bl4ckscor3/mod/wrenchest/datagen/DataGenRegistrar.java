@@ -1,6 +1,10 @@
 package bl4ckscor3.mod.wrenchest.datagen;
 
+import java.util.Set;
+
 import bl4ckscor3.mod.wrenchest.Wrenchest;
+import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.data.recipes.RecipeProvider;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -11,6 +15,9 @@ public class DataGenRegistrar {
 
 	@SubscribeEvent
 	public static void onGatherData(GatherDataEvent.Client event) {
-		event.createProvider(RecipeGenerator.Runner::new);
+		event.createReloadableRegistryObjects(
+			new RegistrySetBuilder().add(RecipeProvider.asBootstrap(RecipeGenerator::new)),
+			Set.of(Wrenchest.MODID)
+		);
 	}
 }
